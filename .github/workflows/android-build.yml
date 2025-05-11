@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest  # 使用 GitHub 提供的最新 Ubuntu 环境
-    
+
     steps:
       # 检出代码
       - name: Checkout code
@@ -23,16 +23,22 @@ jobs:
         with:
           java-version: '8'
 
-      # 设置 Android SDK 环境
-      - name: Set up Android SDK
-        uses: morozovsk/android-setup-action@v1
-        with:
-          api-level: 30  # 设置 Android SDK 的 API 级别
-          build-tools-version: '30.0.3'  # 设置构建工具版本
-          target: google_apis
-          arch: x86_64
-          force-avd-creation: true
-
+      # 安装 Android SDK
+      - name: Install Android SDK
+        run: |
+          sudo apt update
+          sudo apt install -y wget unzip
+          # 安装 Android SDK
+          wget https://dl.google.com/android/repository/commandlinetools-linux-6609375_latest.zip
+          unzip commandlinetools-linux-6609375_latest.zip -d $HOME/android-sdk
+          # 配置 SDK 路径
+          echo "export ANDROID_HOME=$HOME/android-sdk" >> ~/.bashrc
+          echo "export PATH=$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH" >> ~/.bashrc
+          source ~/.bashrc
+          # 安装 SDK 组件
+          yes | sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-30" "build-tools;30.0.3"
+          yes | sdkmanager --sdk_root=$ANDROID_HOME "platform-tools"
+      
       # 构建 APK 使用 Gradle
       - name: Build APK with Gradle
         run: ./gradlew assembleRelease  # 如果你想构建 Release 版本的 APK
