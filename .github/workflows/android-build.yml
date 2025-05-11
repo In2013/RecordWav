@@ -25,14 +25,13 @@ jobs:
 
       # 设置 Android SDK 环境
       - name: Set up Android SDK
-        uses: reactivecircus/android-emulator-action@v2
+        uses: morozovsk/android-setup-action@v1
         with:
-          api-level: 30
+          api-level: 30  # 设置 Android SDK 的 API 级别
+          build-tools-version: '30.0.3'  # 设置构建工具版本
           target: google_apis
           arch: x86_64
           force-avd-creation: true
-          # AVD 的名称
-          avd-name: "Pixel_3a_API_30"
 
       # 构建 APK 使用 Gradle
       - name: Build APK with Gradle
